@@ -6,8 +6,10 @@
 #include "GameFramework/Character.h"
 #include "LMACharacter.generated.h"
 
-class UCameraComponent;		// Компонент камеры
-class USpringArmComponent;	//  Управление поведением камеры
+class UCameraComponent;		//	Компонент камеры
+class USpringArmComponent;	//	Управление поведением камеры
+class ULMAHealthComponent;	//	Здоровье 
+class UAnimMontage;
 
 UCLASS()
 class LEAVEMEALONE_API ALMACharacter : public ACharacter
@@ -18,9 +20,14 @@ public:
 	// Sets default values for this character's properties
 	ALMACharacter();
 
+	UFUNCTION()
+	ULMAHealthComponent* GetHealthComponent() const { return HealthComponent; }
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Sprint")
+	bool IsSprint = false;		// Бежит
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USpringArmComponent* SpringArmComponent;
@@ -46,6 +53,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
 	FVector CursorSize = FVector(20.0f, 40.0f, 40.0f);
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components|Health")
+	ULMAHealthComponent* HealthComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UAnimMontage* DeathMontage;
 
 public:	
 	// Called every frame
@@ -62,7 +74,20 @@ private:
 	void MoveForward(float Value);	// Движение персонажа по оси X
 	void MoveRight(float Value);	// Движение персонажа по оси Y
 
-	void CameraZoom(void);	// Приближение камеры к персонажу
-	void CameraAway(void);	// Отдаление камеры от персонажа
+	void CameraZoom(void);	// Приближение камеры к персонажу (задание 05)
+	void CameraAway(void);	// Отдаление камеры от персонажа (задание 05)
+	
+	void Sprint(void);					// Бег (задание 06)
+	void DurabilityControl(void);		// Отслеживает выносливость
+	void DurabilityChange(void);		// Изменяет выносливость
+	float Durability = 100.0f;			// Выносливость
+	FTimerHandle DelayChangeDurability;	// Таймер для изменения выносливости
+
+	void OnDeath();
+	void OnHealthChanged(float NewHealth);
+
+	void RotationPlayerOnCursor();
+
+
 	
 };

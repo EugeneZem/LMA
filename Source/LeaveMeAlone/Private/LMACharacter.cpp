@@ -8,6 +8,10 @@
 #include "Components/InputComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/LMAHealthComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Engine/Engine.h"
+#include "TimerManager.h"
 
 // Sets default values
 ALMACharacter::ALMACharacter()
@@ -32,6 +36,7 @@ ALMACharacter::ALMACharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
+	HealthComponent = CreateDefaultSubobject<ULMAHealthComponent>("HealthComponent");
 }
 
 // Called when the game starts or when spawned
@@ -43,26 +48,22 @@ void ALMACharacter::BeginPlay()
 	{
 		CurrentCursor = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), CursorMaterial, CursorSize, FVector(0));
 	}
-	
+
+	OnHealthChanged(HealthComponent->GetHealth());
+	HealthComponent->OnDeath.AddUObject(this, &ALMACharacter::OnDeath);
+	HealthComponent->OnHealthChanged.AddUObject(this, &ALMACharacter::OnHealthChanged);
 }
 
-// Called every frame
 void ALMACharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	if (PC)
+	if (!(HealthComponent->IsDead()))
 	{
-		FHitResult ResultHit;
-		PC->GetHitResultUnderCursor(ECC_GameTraceChannel1, true, ResultHit);
-		float FindRotatorResultYaw = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), ResultHit.Location).Yaw;
-		SetActorRotation(FQuat(FRotator(0.0f, FindRotatorResultYaw, 0.0f)));
-		if (CurrentCursor)
-		{
-			CurrentCursor->SetWorldLocation(ResultHit.Location);
-		}
+		RotationPlayerOnCursor();
 	}
+
+	DurabilityControl();
 }
 
 // Called to bind functionality to input
@@ -72,8 +73,10 @@ void ALMACharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ALMACharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ALMACharacter::MoveRight);
-	PlayerInputComponent->BindAction("CameraZoom", IE_Pressed,  this, &ALMACharacter::CameraZoom);
+	PlayerInputComponent->BindAction("CameraZoom", IE_Pressed, this, &ALMACharacter::CameraZoom);
 	PlayerInputComponent->BindAction("CameraAway", IE_Pressed, this, &ALMACharacter::CameraAway);
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ALMACharacter::Sprint);
+
 }
 
 void ALMACharacter::MoveForward(float Value)
@@ -112,3 +115,67 @@ void ALMACharacter::CameraAway(void)
 	}
 }
 
+void ALMACharacter::OnDeath()
+{
+	CurrentCursor->DestroyRenderState_Concurrent();
+	PlayAnimMontage(DeathMontage);
+	GetCharacterMovement()->DisableMovement();
+	SetLifeSpan(5.0f);
+	if (Controller)
+	{
+		Controller->ChangeState(NAME_Spectating);
+	}
+}
+
+void ALMACharacter::OnHealthChanged(float NewHealth)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("Health = %f"), NewHealth));
+}
+
+void ALMACharacter::RotationPlayerOnCursor()
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PC)
+	{
+		FHitResult ResultHit;
+		PC->GetHitResultUnderCursor(ECC_GameTraceChannel1, true, ResultHit);
+		float FindRotatorResultYaw = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
+			ResultHit.Location).Yaw;
+		SetActorRotation(FQuat(FRotator(0.0f, FindRotatorResultYaw, 0.0f)));
+		if (CurrentCursor)
+		{
+			CurrentCursor->SetWorldLocation(ResultHit.Location);
+		}
+	}
+}
+
+//	Активация бега
+void ALMACharacter::Sprint(void)
+{
+	if (Durability > 0)
+	{
+		IsSprint = true;
+
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Durability = %f"), Durability));
+	}
+}
+
+void ALMACharacter::DurabilityChange(void)
+{
+	//if (IsSprint) Durability = FMath::Clamp(Durability - 5, 0.0f, 100.0f);
+	//else Durability = FMath::Clamp(Durability + 2.5f, 0.0f, 100.0f);
+
+//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Durability = %f"), Durability));
+}
+
+void ALMACharacter::DurabilityControl(void)
+{
+	//	Задержка перед изменением выносливости
+//	GetWorldTimerManager().SetTimer(DelayChangeDurability, this, &ALMACharacter::DurabilityChange, 1);
+
+	if (IsSprint) Durability = FMath::Clamp(Durability - 5, 0.0f, 100.0f);
+	else Durability = FMath::Clamp(Durability + 2.5f, 0.0f, 100.0f);
+		
+//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Durability = %f"), Durability));
+//	IsSprint = false;
+}
