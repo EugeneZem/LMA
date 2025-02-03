@@ -52,6 +52,8 @@ void ALMACharacter::BeginPlay()
 	OnHealthChanged(HealthComponent->GetHealth());
 	HealthComponent->OnDeath.AddUObject(this, &ALMACharacter::OnDeath);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ALMACharacter::OnHealthChanged);
+
+	GetWorldTimerManager().SetTimer(TimerDurability, this, &ALMACharacter::DurabilityControl, TimerDurabilityRate, true);
 }
 
 void ALMACharacter::Tick(float DeltaTime)
@@ -63,7 +65,7 @@ void ALMACharacter::Tick(float DeltaTime)
 		RotationPlayerOnCursor();
 	}
 
-	DurabilityControl();
+	//DurabilityControl();
 }
 
 // Called to bind functionality to input
@@ -75,7 +77,8 @@ void ALMACharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("MoveRight", this, &ALMACharacter::MoveRight);
 	PlayerInputComponent->BindAction("CameraZoom", IE_Pressed, this, &ALMACharacter::CameraZoom);
 	PlayerInputComponent->BindAction("CameraAway", IE_Pressed, this, &ALMACharacter::CameraAway);
-	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ALMACharacter::Sprint);
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ALMACharacter::SprintActivate);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ALMACharacter::SprintDeActivate);
 
 }
 
@@ -149,33 +152,21 @@ void ALMACharacter::RotationPlayerOnCursor()
 	}
 }
 
-//	Активация бега
-void ALMACharacter::Sprint(void)
-{
-	if (Durability > 0)
-	{
-		IsSprint = true;
 
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Durability = %f"), Durability));
-	}
+void ALMACharacter::SprintActivate(void)
+{
+	if (Durability > 20 ) IsSprint = true;
 }
 
-void ALMACharacter::DurabilityChange(void)
+void ALMACharacter::SprintDeActivate(void)
 {
-	//if (IsSprint) Durability = FMath::Clamp(Durability - 5, 0.0f, 100.0f);
-	//else Durability = FMath::Clamp(Durability + 2.5f, 0.0f, 100.0f);
-
-//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Durability = %f"), Durability));
+	IsSprint = false;
 }
 
-void ALMACharacter::DurabilityControl(void)
+void ALMACharacter::DurabilityControl()
 {
-	//	Задержка перед изменением выносливости
-//	GetWorldTimerManager().SetTimer(DelayChangeDurability, this, &ALMACharacter::DurabilityChange, 1);
-
 	if (IsSprint) Durability = FMath::Clamp(Durability - 5, 0.0f, 100.0f);
-	else Durability = FMath::Clamp(Durability + 2.5f, 0.0f, 100.0f);
-		
-//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Durability = %f"), Durability));
-//	IsSprint = false;
+		else Durability = FMath::Clamp(Durability + 2.5f, 0.0f, 100.0f);
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Durability = %f"), Durability));
 }

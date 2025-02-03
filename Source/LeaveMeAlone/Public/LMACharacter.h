@@ -59,6 +59,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* DeathMontage;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components|Durability")
+	float Durability = 100.0f;			// Выносливость
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -77,11 +80,14 @@ private:
 	void CameraZoom(void);	// Приближение камеры к персонажу (задание 05)
 	void CameraAway(void);	// Отдаление камеры от персонажа (задание 05)
 	
-	void Sprint(void);					// Бег (задание 06)
-	void DurabilityControl(void);		// Отслеживает выносливость
-	void DurabilityChange(void);		// Изменяет выносливость
-	float Durability = 100.0f;			// Выносливость
-	FTimerHandle DelayChangeDurability;	// Таймер для изменения выносливости
+	void SprintActivate(void);
+	void SprintDeActivate(void);
+
+
+
+	FTimerHandle TimerDurability;	// Таймер для изменения выносливости
+	float TimerDurabilityRate = 0.5f;
+	void DurabilityControl();
 
 	void OnDeath();
 	void OnHealthChanged(float NewHealth);
