@@ -37,6 +37,9 @@ ALMACharacter::ALMACharacter()
 	bUseControllerRotationRoll = false;
 
 	HealthComponent = CreateDefaultSubobject<ULMAHealthComponent>("HealthComponent");
+
+	MaxSpeed = 300;
+	SprintSpeed = MaxSpeed * 1.5;
 }
 
 // Called when the game starts or when spawned
@@ -53,7 +56,7 @@ void ALMACharacter::BeginPlay()
 	HealthComponent->OnDeath.AddUObject(this, &ALMACharacter::OnDeath);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ALMACharacter::OnHealthChanged);
 
-	GetWorldTimerManager().SetTimer(TimerDurability, this, &ALMACharacter::DurabilityControl, TimerDurabilityRate, true);
+	GetWorldTimerManager().SetTimer(TimerDurability, this, &ALMACharacter::SprintControl, TimerDurabilityRate, true);
 }
 
 void ALMACharacter::Tick(float DeltaTime)
@@ -64,8 +67,6 @@ void ALMACharacter::Tick(float DeltaTime)
 	{
 		RotationPlayerOnCursor();
 	}
-
-	//DurabilityControl();
 }
 
 // Called to bind functionality to input
@@ -155,7 +156,7 @@ void ALMACharacter::RotationPlayerOnCursor()
 
 void ALMACharacter::SprintActivate(void)
 {
-	if (Durability > 20 ) IsSprint = true;
+		IsSprint = true;
 }
 
 void ALMACharacter::SprintDeActivate(void)
@@ -163,10 +164,19 @@ void ALMACharacter::SprintDeActivate(void)
 	IsSprint = false;
 }
 
-void ALMACharacter::DurabilityControl()
+void ALMACharacter::SprintControl()
 {
-	if (IsSprint) Durability = FMath::Clamp(Durability - 5, 0.0f, 100.0f);
-		else Durability = FMath::Clamp(Durability + 2.5f, 0.0f, 100.0f);
+	if (IsSprint && Durability > 20)
+	{ 
+		Durability = FMath::Clamp(Durability - 5, 0.0f, 100.0f);
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	}
+	else
+	{
+		Durability = FMath::Clamp(Durability + 2.5f, 0.0f, 100.0f);
+		GetCharacterMovement()->MaxWalkSpeed = MaxSpeed;
+		IsSprint = false;
+	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Durability = %f"), Durability));
 }

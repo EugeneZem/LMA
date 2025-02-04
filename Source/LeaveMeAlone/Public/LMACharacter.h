@@ -62,6 +62,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components|Durability")
 	float Durability = 100.0f;			// Выносливость
 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -87,7 +88,10 @@ private:
 
 	FTimerHandle TimerDurability;	// Таймер для изменения выносливости
 	float TimerDurabilityRate = 0.5f;
-	void DurabilityControl();
+	float MaxSpeed = 0;
+	float SprintSpeed = 0;
+
+	void SprintControl();
 
 	void OnDeath();
 	void OnHealthChanged(float NewHealth);
