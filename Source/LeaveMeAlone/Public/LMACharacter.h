@@ -6,10 +6,11 @@
 #include "GameFramework/Character.h"
 #include "LMACharacter.generated.h"
 
-class UCameraComponent;		//	Компонент камеры
-class USpringArmComponent;	//	Управление поведением камеры
-class ULMAHealthComponent;	//	Здоровье 
+class UCameraComponent;
+class USpringArmComponent;
+class ULMAHealthComponent;
 class UAnimMontage;
+class ULMAWeaponComponent;
 
 UCLASS()
 class LEAVEMEALONE_API ALMACharacter : public ACharacter
@@ -61,6 +62,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components|Durability")
 	float Durability = 100.0f;			// Выносливость
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	ULMAWeaponComponent* WeaponComponent;
 
 
 public:	

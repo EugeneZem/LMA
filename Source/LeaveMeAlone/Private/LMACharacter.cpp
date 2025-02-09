@@ -9,16 +9,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/LMAHealthComponent.h"
+#include "Components/LMAWeaponComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/Engine.h"
 #include "TimerManager.h"
 
-// Sets default values
 ALMACharacter::ALMACharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Параметры, соответствующие жанру игры
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
 	SpringArmComponent->SetupAttachment(GetRootComponent());
 	SpringArmComponent->SetUsingAbsoluteRotation(true);
@@ -40,9 +39,11 @@ ALMACharacter::ALMACharacter()
 
 	MaxSpeed = 300;
 	SprintSpeed = MaxSpeed * 1.5;
+
+	WeaponComponent = CreateDefaultSubobject<ULMAWeaponComponent>("Weapon");
 }
 
-// Called when the game starts or when spawned
+
 void ALMACharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -69,7 +70,6 @@ void ALMACharacter::Tick(float DeltaTime)
 	}
 }
 
-// Called to bind functionality to input
 void ALMACharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -80,6 +80,8 @@ void ALMACharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("CameraAway", IE_Pressed, this, &ALMACharacter::CameraAway);
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ALMACharacter::SprintActivate);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ALMACharacter::SprintDeActivate);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &ULMAWeaponComponent::Fire);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &ULMAWeaponComponent::Reload);
 
 }
 
