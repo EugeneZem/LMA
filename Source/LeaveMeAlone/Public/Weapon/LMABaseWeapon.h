@@ -12,7 +12,7 @@ struct FAmmoWeapon
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	int32 Bullets;
+	int32 Bullets = 30;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	int32 Clips;
@@ -25,17 +25,19 @@ UCLASS()
 class LEAVEMEALONE_API ALMABaseWeapon : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ALMABaseWeapon();
 
 	void Fire();
 
 	void ChangeClip();
 
+	FAmmoWeapon getAmmoWeapon();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	FAmmoWeapon AmmoWeapon { 30, 0, true };
+	FAmmoWeapon AmmoWeapon{ 30, 0, true };
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	USkeletalMeshComponent* WeaponComponent;

@@ -80,7 +80,8 @@ void ALMACharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("CameraAway", IE_Pressed, this, &ALMACharacter::CameraAway);
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ALMACharacter::SprintActivate);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ALMACharacter::SprintDeActivate);
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &ULMAWeaponComponent::Fire);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &ULMAWeaponComponent::FireActivate);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &ULMAWeaponComponent::FireDeactivate);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &ULMAWeaponComponent::Reload);
 
 }

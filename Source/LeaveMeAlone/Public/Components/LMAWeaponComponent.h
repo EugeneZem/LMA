@@ -20,6 +20,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<ALMABaseWeapon> WeaponClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float FrenquencyFire = 600.0f;
+
+
+
+
 	UPROPERTY()
 	ALMABaseWeapon* Weapon = nullptr;
 
@@ -36,13 +42,23 @@ public:
 
 	bool CanReload() const;
 
-	void Fire();
+	void FireActivate();
+
+	void FireDeactivate();
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	void SpawnWeapon();
+
+	FTimerHandle TimerFire;
+
+	bool IsFire;
+
+	bool TimersIsOn = false;
+
+	void FireControl();
 
 
 };

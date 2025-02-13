@@ -57,3 +57,8 @@ void ALMABaseWeapon::DecrementBullets()
 		ChangeClip();
 	}
 }
+
+FAmmoWeapon ALMABaseWeapon::getAmmoWeapon()
+{
+	return AmmoWeapon;
+}

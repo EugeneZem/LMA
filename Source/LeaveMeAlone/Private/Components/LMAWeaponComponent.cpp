@@ -2,6 +2,7 @@
 #include "Animations/LMAReloadFinishedAnimNotify.h"
 #include "GameFramework/Character.h"
 #include "Weapon/LMABaseWeapon.h"
+#include "TimerManager.h"
 
 ULMAWeaponComponent::ULMAWeaponComponent()
 {
@@ -18,6 +19,8 @@ void ULMAWeaponComponent::BeginPlay()
 	SpawnWeapon();
 
 	InitAnimNotify();
+
+	GetWorld()->GetTimerManager().SetTimer(TimerFire, this, &ULMAWeaponComponent::FireControl, 60 / FrenquencyFire, TimersIsOn);
 }
 
 void ULMAWeaponComponent::SpawnWeapon()
@@ -35,14 +38,6 @@ void ULMAWeaponComponent::SpawnWeapon()
 	}
 }
 
-void ULMAWeaponComponent::Fire()
-{
-	if (Weapon && !AnimReloading)
-	{
-		Weapon->Fire();
-	}
-}
-
 void ULMAWeaponComponent::InitAnimNotify()
 {
 	if (!ReloadMontage)return;
@@ -52,15 +47,13 @@ void ULMAWeaponComponent::InitAnimNotify()
 		auto ReloadFinish = Cast<ULMAReloadFinishedAnimNotify>(NotifyEvent.Notify);
 		if (ReloadFinish)
 		{
-			ReloadFinish->OnNotifyReloadFinished.AddUObject(this,
-				&ULMAWeaponComponent::OnNotifyReloadFinished);
+			ReloadFinish->OnNotifyReloadFinished.AddUObject(this, &ULMAWeaponComponent::OnNotifyReloadFinished);
 			break;
 		}
 	}
 }
 
-void ULMAWeaponComponent::OnNotifyReloadFinished(USkeletalMeshComponent*
-	SkeletalMesh)
+void ULMAWeaponComponent::OnNotifyReloadFinished(USkeletalMeshComponent* SkeletalMesh)
 {
 	const auto Character = Cast<ACharacter>(GetOwner());
 	if (Character->GetMesh() == SkeletalMesh)
@@ -80,4 +73,30 @@ void ULMAWeaponComponent::Reload()
 	AnimReloading = true;
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
 	Character->PlayAnimMontage(ReloadMontage);
+}
+
+void ULMAWeaponComponent::FireControl()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("in Fire")));
+	if (IsFire)
+	{
+		Weapon->Fire();
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("%d"), Weapon->getAmmoWeapon().Bullets));
+	}
+
+}
+
+void ULMAWeaponComponent::FireActivate(void)
+{
+	if (Weapon && !AnimReloading)
+	{
+		IsFire = true;
+		TimersIsOn = true;
+	}
+}
+
+void ULMAWeaponComponent::FireDeactivate(void)
+{
+	IsFire = false;
+	TimersIsOn = false;
 }
