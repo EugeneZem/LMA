@@ -5,7 +5,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogWeapon, All, All);
 
 ALMABaseWeapon::ALMABaseWeapon()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	WeaponComponent = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	SetRootComponent(WeaponComponent);
 }
@@ -13,7 +13,7 @@ ALMABaseWeapon::ALMABaseWeapon()
 void ALMABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	CurrentAmmoWeapon = AmmoWeapon;
 }
 
 void ALMABaseWeapon::Fire()
@@ -50,8 +50,9 @@ bool ALMABaseWeapon::IsCurrentClipEmpty() const
 void ALMABaseWeapon::DecrementBullets()
 {
 	CurrentAmmoWeapon.Bullets--;
-	UE_LOG(LogWeapon, Display, TEXT("Bullets = %s"),
-		*FString::FromInt(CurrentAmmoWeapon.Bullets));
+
+	UE_LOG(LogWeapon, Display, TEXT("Bullets = %s"), *FString::FromInt(CurrentAmmoWeapon.Bullets));
+
 	if (IsCurrentClipEmpty())
 	{
 		ChangeClip();
@@ -60,5 +61,5 @@ void ALMABaseWeapon::DecrementBullets()
 
 FAmmoWeapon ALMABaseWeapon::getAmmoWeapon()
 {
-	return AmmoWeapon;
+	return CurrentAmmoWeapon;
 }

@@ -52,13 +52,10 @@ protected:
 private:
 	void SpawnWeapon();
 
-	FTimerHandle TimerFire;
+	FTimerHandle FireTimerHandle;
 
 	bool IsFire;
 
-	bool TimersIsOn = false;
-
 	void FireControl();
-
 
 };

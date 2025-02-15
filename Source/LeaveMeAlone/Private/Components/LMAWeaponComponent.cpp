@@ -20,7 +20,6 @@ void ULMAWeaponComponent::BeginPlay()
 
 	InitAnimNotify();
 
-	GetWorld()->GetTimerManager().SetTimer(TimerFire, this, &ULMAWeaponComponent::FireControl, 60 / FrenquencyFire, TimersIsOn);
 }
 
 void ULMAWeaponComponent::SpawnWeapon()
@@ -77,26 +76,19 @@ void ULMAWeaponComponent::Reload()
 
 void ULMAWeaponComponent::FireControl()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("in Fire")));
-	if (IsFire)
-	{
-		Weapon->Fire();
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("%d"), Weapon->getAmmoWeapon().Bullets));
-	}
-
+	Weapon->Fire();
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("%d"), Weapon->getAmmoWeapon().Bullets));
 }
 
 void ULMAWeaponComponent::FireActivate(void)
 {
 	if (Weapon && !AnimReloading)
 	{
-		IsFire = true;
-		TimersIsOn = true;
+		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ULMAWeaponComponent::FireControl, 60 / FrenquencyFire, true);
 	}
 }
 
 void ULMAWeaponComponent::FireDeactivate(void)
 {
-	IsFire = false;
-	TimersIsOn = false;
+	GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
 }
