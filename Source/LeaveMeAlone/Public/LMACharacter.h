@@ -9,6 +9,7 @@ class USpringArmComponent;
 class ULMAHealthComponent;
 class UAnimMontage;
 class ULMAWeaponComponent;
+class ALMABaseWeapon;
 
 UCLASS()
 class LEAVEMEALONE_API ALMACharacter : public ACharacter
@@ -63,7 +64,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	ULMAWeaponComponent* WeaponComponent;
-
 
 public:	
 	// Called every frame

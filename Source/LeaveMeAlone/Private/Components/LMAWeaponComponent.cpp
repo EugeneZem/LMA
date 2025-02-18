@@ -7,8 +7,6 @@
 ULMAWeaponComponent::ULMAWeaponComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
-
 }
 
 
@@ -34,6 +32,9 @@ void ULMAWeaponComponent::SpawnWeapon()
 				AttachmentRules(EAttachmentRule::SnapToTarget, false);
 			Weapon->AttachToComponent(Character->GetMesh(), AttachmentRules, "r_Weapon_Socket");
 		}
+
+		Weapon->OnClipsEmpty.AddUObject(this, &ALMABaseWeapon::OnClipsEmpty);
+
 	}
 }
 

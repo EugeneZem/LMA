@@ -35,6 +35,10 @@ public:
 
 	FAmmoWeapon getAmmoWeapon();
 
+	DECLARE_MULTICAST_DELEGATE(FOnClipsEmpty);
+	
+	FOnClipsEmpty OnClipsEmpty;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	FAmmoWeapon AmmoWeapon{ 30, 0, true };
@@ -52,6 +56,8 @@ protected:
 	void DecrementBullets();
 
 	bool IsCurrentClipEmpty() const;
+
+	bool IsCurrentClipFool() const;
 
 private:
 	FAmmoWeapon CurrentAmmoWeapon;

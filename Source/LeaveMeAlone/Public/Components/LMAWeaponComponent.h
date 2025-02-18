@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Weapon/LMABaseWeapon.h"
 #include "LMAWeaponComponent.generated.h"
 
 // Оставить
@@ -45,6 +46,8 @@ public:
 	void FireActivate();
 
 	void FireDeactivate();
+
+	void OnClipsEmpty();
 
 protected:
 	virtual void BeginPlay() override;

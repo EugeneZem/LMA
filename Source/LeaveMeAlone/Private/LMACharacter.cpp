@@ -57,6 +57,8 @@ void ALMACharacter::BeginPlay()
 	HealthComponent->OnDeath.AddUObject(this, &ALMACharacter::OnDeath);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ALMACharacter::OnHealthChanged);
 
+	
+
 	GetWorldTimerManager().SetTimer(TimerDurability, this, &ALMACharacter::SprintControl, TimerDurabilityRate, true);
 }
 

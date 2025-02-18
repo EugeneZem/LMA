@@ -39,13 +39,22 @@ void ALMABaseWeapon::Shoot()
 
 void ALMABaseWeapon::ChangeClip()
 {
-	CurrentAmmoWeapon.Bullets = AmmoWeapon.Bullets;
+	if (IsCurrentClipFool())
+	{
+		CurrentAmmoWeapon.Bullets = AmmoWeapon.Bullets;
+	}
 }
 
 bool ALMABaseWeapon::IsCurrentClipEmpty() const
 {
 	return CurrentAmmoWeapon.Bullets == 0;
 }
+
+bool ALMABaseWeapon::IsCurrentClipFool() const
+{
+	return CurrentAmmoWeapon.Bullets == 30;
+}
+
 
 void ALMABaseWeapon::DecrementBullets()
 {
@@ -55,8 +64,13 @@ void ALMABaseWeapon::DecrementBullets()
 
 	if (IsCurrentClipEmpty())
 	{
+		OnClipsEmpty.Broadcast();
+
 		ChangeClip();
 	}
+
+
+
 }
 
 FAmmoWeapon ALMABaseWeapon::getAmmoWeapon()
