@@ -63,7 +63,6 @@ bool ALMABaseWeapon::IsCurrentClipFool() const
 	return CurrentAmmoWeapon.Bullets == AmmoWeapon.Bullets;
 }
 
-
 void ALMABaseWeapon::DecrementBullets()
 {
 	CurrentAmmoWeapon.Bullets--;
@@ -79,4 +78,15 @@ void ALMABaseWeapon::DecrementBullets()
 FAmmoWeapon ALMABaseWeapon::getAmmoWeapon()
 {
 	return CurrentAmmoWeapon;
+}
+
+void ALMABaseWeapon::FireActivate()
+{
+	Fire();
+	GetWorldTimerManager().SetTimer(FireTimerHandle, this, &ALMABaseWeapon::Fire, 60 / FrenquencyFire, true);
+}
+
+void ALMABaseWeapon::FireDeactivate()
+{
+	GetWorldTimerManager().ClearTimer(FireTimerHandle);
 }

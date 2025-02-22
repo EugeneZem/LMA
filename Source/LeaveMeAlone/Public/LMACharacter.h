@@ -65,6 +65,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	ULMAWeaponComponent* WeaponComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
+	ALMABaseWeapon* BaseWeapon;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -35,6 +35,10 @@ public:
 
 	void ChangeClip();
 
+	void FireActivate();
+
+	void FireDeactivate();
+
 	FAmmoWeapon getAmmoWeapon();
 
 	FOnClipsEmpty OnClipsEmpty;
@@ -49,6 +53,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	float TraceDistance = 800.0f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float FrenquencyFire = 600.0f;
+
 	virtual void BeginPlay() override;
 
 	void Shoot();
@@ -61,5 +68,7 @@ protected:
 
 private:
 	FAmmoWeapon CurrentAmmoWeapon;
+
+	FTimerHandle FireTimerHandle;
 
 };

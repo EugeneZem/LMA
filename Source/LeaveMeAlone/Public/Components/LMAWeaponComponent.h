@@ -18,49 +18,53 @@ class LEAVEMEALONE_API ULMAWeaponComponent : public UActorComponent
 public:
 	ULMAWeaponComponent();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	TSubclassOf<ALMABaseWeapon> WeaponClass;
+	void Fire();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	float FrenquencyFire = 600.0f;
+	void StartLongFire();
 
+	void StopLongFire();
 
+	void ManualReload();
 
+	void FireProhibition();
+
+	void FirePermission();
+
+	void ReloadProhibition();
+
+	void ReloadPermission();
+
+	bool IsReloading();
+
+	void Reload();
 
 	UPROPERTY()
 	ALMABaseWeapon* Weapon = nullptr;
 
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<ALMABaseWeapon> WeaponClass;
+protected:
+
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	UAnimMontage* ReloadMontage;
+	
+	virtual void BeginPlay() override;
 
-	bool AnimReloading = false;
-
-	void Reload();
-
+private:
 	void AutoReload();
 
 	void InitAnimNotify();
 
-	void OnNotifyReloadFinished(USkeletalMeshComponent* SkeletalMesh);
+	void SpawnWeapon();
 
 	bool CanReload() const;
 
-	void FireActivate();
+	void OnNotifyReloadFinished(USkeletalMeshComponent* SkeletalMesh);
 
-	void FireDeactivate();
-
-	void OnClipsEmpty();
-
-protected:
-	virtual void BeginPlay() override;
-
-private:
-	void SpawnWeapon();
-
-	FTimerHandle FireTimerHandle;
-
-	bool IsFire;
-
-	void FireControl();
+	bool AnimReloading = false;
+	bool LongFireActivated = false;
+	bool FireProhibited = false;
+	bool ReloadProhibited = false;
 
 };

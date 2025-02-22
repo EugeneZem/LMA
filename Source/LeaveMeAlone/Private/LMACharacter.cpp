@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/LMAHealthComponent.h"
 #include "Components/LMAWeaponComponent.h"
+#include "Weapon/LMABaseWeapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/Engine.h"
 #include "TimerManager.h"
@@ -41,6 +42,7 @@ ALMACharacter::ALMACharacter()
 	SprintSpeed = MaxSpeed * 1.5;
 
 	WeaponComponent = CreateDefaultSubobject<ULMAWeaponComponent>("Weapon");
+	BaseWeapon = WeaponComponent->Weapon;
 }
 
 
@@ -82,8 +84,8 @@ void ALMACharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("CameraAway", IE_Pressed, this, &ALMACharacter::CameraAway);
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ALMACharacter::SprintActivate);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ALMACharacter::SprintDeActivate);
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &ULMAWeaponComponent::FireActivate);
-	PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &ULMAWeaponComponent::FireDeactivate);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, BaseWeapon, &ALMABaseWeapon::FireActivate);
+	PlayerInputComponent->BindAction("Fire", IE_Released, BaseWeapon, &ALMABaseWeapon::FireDeactivate);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &ULMAWeaponComponent::Reload);
 
 }

@@ -66,40 +66,90 @@ bool ULMAWeaponComponent::CanReload() const
 	return !AnimReloading;
 }
 
-
-void ULMAWeaponComponent::FireControl()
-{
-	Weapon->Fire();
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("%d"), Weapon->getAmmoWeapon().Bullets));
-}
-
-void ULMAWeaponComponent::FireActivate(void)
-{
-	if (Weapon && !AnimReloading)
-	{
-		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ULMAWeaponComponent::FireControl, 60 / FrenquencyFire, true);
-	}
-}
-
-void ULMAWeaponComponent::FireDeactivate(void)
-{
-	GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
-}
-
-void ULMAWeaponComponent::OnClipsEmpty()
-{
-	if (!CanReload()) return;
-	AnimReloading = true;
-	ACharacter* Character = Cast<ACharacter>(GetOwner());
-	Character->PlayAnimMontage(ReloadMontage);
-}
-
 void ULMAWeaponComponent::AutoReload()
 {
-	OnClipsEmpty();
+	Reload();
 }
 
 void ULMAWeaponComponent::Reload()
 {
-	OnClipsEmpty();
+	if (CanReload())
+	{
+		AnimReloading = true;
+		if (LongFireActivated)
+		{
+			Weapon->FireDeactivate();
+		}
+		ACharacter* Character = Cast<ACharacter>(GetOwner());
+		Character->PlayAnimMontage(ReloadMontage);
+	}
+
+}
+
+void ULMAWeaponComponent::Fire()
+{
+	if (IsValid(Weapon) && !AnimReloading && !FireProhibited)
+	{
+		Weapon->Fire();
+	}
+}
+
+void ULMAWeaponComponent::StartLongFire()
+{
+	if (IsValid(Weapon))
+	{
+		LongFireActivated = true;
+
+		if (!AnimReloading && !FireProhibited)
+		{
+			Weapon->FireActivate();
+		}
+	}
+}
+
+void ULMAWeaponComponent::StopLongFire()
+{
+	if (IsValid(Weapon))
+	{
+		Weapon->FireDeactivate();
+		LongFireActivated = false;
+	}
+}
+
+void ULMAWeaponComponent::ManualReload()
+{
+	Reload();
+}
+
+void ULMAWeaponComponent::FireProhibition()
+{
+	FireProhibited = true;
+	if (LongFireActivated)
+	{
+		Weapon->FireDeactivate();
+	}
+}
+
+void ULMAWeaponComponent::FirePermission()
+{
+	FireProhibited = false;
+	if (LongFireActivated)
+	{
+		StartLongFire();
+	}
+}
+
+void ULMAWeaponComponent::ReloadProhibition()
+{
+	ReloadProhibited = true;
+}
+
+void ULMAWeaponComponent::ReloadPermission()
+{
+	ReloadProhibited = false;
+}
+
+bool ULMAWeaponComponent::IsReloading()
+{
+	return AnimReloading;
 }
