@@ -6,6 +6,8 @@
 
 class USkeletalMeshComponent;
 
+DECLARE_MULTICAST_DELEGATE(FOnClipsEmpty);
+
 USTRUCT(BlueprintType)
 struct FAmmoWeapon
 {
@@ -35,8 +37,6 @@ public:
 
 	FAmmoWeapon getAmmoWeapon();
 
-	DECLARE_MULTICAST_DELEGATE(FOnClipsEmpty);
-	
 	FOnClipsEmpty OnClipsEmpty;
 
 protected:

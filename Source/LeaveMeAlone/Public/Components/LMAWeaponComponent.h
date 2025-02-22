@@ -37,6 +37,8 @@ public:
 
 	void Reload();
 
+	void AutoReload();
+
 	void InitAnimNotify();
 
 	void OnNotifyReloadFinished(USkeletalMeshComponent* SkeletalMesh);

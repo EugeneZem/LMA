@@ -33,8 +33,7 @@ void ULMAWeaponComponent::SpawnWeapon()
 			Weapon->AttachToComponent(Character->GetMesh(), AttachmentRules, "r_Weapon_Socket");
 		}
 
-		Weapon->OnClipsEmpty.AddUObject(this, &ALMABaseWeapon::OnClipsEmpty);
-
+		Weapon->OnClipsEmpty.AddUObject(this, &ULMAWeaponComponent::AutoReload);
 	}
 }
 
@@ -67,13 +66,6 @@ bool ULMAWeaponComponent::CanReload() const
 	return !AnimReloading;
 }
 
-void ULMAWeaponComponent::Reload()
-{
-	if (!CanReload()) return;
-	AnimReloading = true;
-	ACharacter* Character = Cast<ACharacter>(GetOwner());
-	Character->PlayAnimMontage(ReloadMontage);
-}
 
 void ULMAWeaponComponent::FireControl()
 {
@@ -92,4 +84,22 @@ void ULMAWeaponComponent::FireActivate(void)
 void ULMAWeaponComponent::FireDeactivate(void)
 {
 	GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
+}
+
+void ULMAWeaponComponent::OnClipsEmpty()
+{
+	if (!CanReload()) return;
+	AnimReloading = true;
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+	Character->PlayAnimMontage(ReloadMontage);
+}
+
+void ULMAWeaponComponent::AutoReload()
+{
+	OnClipsEmpty();
+}
+
+void ULMAWeaponComponent::Reload()
+{
+	OnClipsEmpty();
 }

@@ -48,7 +48,7 @@ void ALMABaseWeapon::ChangeClip()
 	}
 	else if (CurrentAmmoWeapon.Clips > 0)
 	{
-		CurrentAmmoWeapon.Bullets = AmmoWeapon.Bullets;;
+		CurrentAmmoWeapon.Bullets = 30;
 		--CurrentAmmoWeapon.Clips;
 	}
 }
